@@ -1,0 +1,10 @@
+streamlit
+torch
+transformers
+pandas
+numpy
+nltk
+beautifulsoup4
+contractions
+emoji
+safetensors
