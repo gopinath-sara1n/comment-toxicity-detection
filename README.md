@@ -238,7 +238,7 @@ Comment Toxicity/
 |-- test_model.py
 ```
 
-Actual notebook filenames may vary depending on the development workflow.
+
 
 ---
 
