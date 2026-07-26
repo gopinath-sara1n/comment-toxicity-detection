@@ -282,13 +282,13 @@ The application will start locally in the browser.
 
 Try the deployed Streamlit application:
 
-[Live Demo]((https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/))
-
+[Live Demo](https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/)
+---
 ## Trained Model
 
 The fine-tuned DistilBERT model is available on Hugging Face:
 
-[DistilBERT Toxicity Model]((https://huggingface.co/gopinath-sara1n/comment-toxicity-distilbert))
+[DistilBERT Toxicity Model](https://huggingface.co/gopinath-sara1n/comment-toxicity-distilbert)
 ---
 
 ## Technologies Used
@@ -335,10 +335,6 @@ Possible improvements include:
 
 * Per-label threshold optimization
 * Improved handling of minority toxicity classes
-* Model quantization for faster CPU inference
-* Additional transformer architectures
-* API-based model serving
-* Cloud deployment
 * Model monitoring and feedback collection
 
 ---
