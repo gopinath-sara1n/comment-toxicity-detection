@@ -1,17 +1,24 @@
-from pathlib import Path
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+)
 
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-MODEL_PATH = BASE_DIR / "models" / "DistilBERT_Model"
+MODEL_NAME = "gopinath-sara1n/comment-toxicity-distilbert"
 
 
 def load_toxicity_model():
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+    """
+    Load the fine-tuned DistilBERT toxicity model
+    and tokenizer from Hugging Face Hub.
+    """
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        MODEL_NAME
+    )
 
     model = AutoModelForSequenceClassification.from_pretrained(
-        MODEL_PATH
+        MODEL_NAME
     )
 
     model.eval()
