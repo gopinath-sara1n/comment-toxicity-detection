@@ -277,7 +277,18 @@ python -m streamlit run app/streamlit_app.py
 ```
 
 The application will start locally in the browser.
+---
+## Live Application
 
+Try the deployed Streamlit application:
+
+[Live Demo]((https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/))
+
+## Trained Model
+
+The fine-tuned DistilBERT model is available on Hugging Face:
+
+[DistilBERT Toxicity Model]((https://huggingface.co/gopinath-sara1n/comment-toxicity-distilbert))
 ---
 
 ## Technologies Used
