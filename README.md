@@ -1,15 +1,14 @@
-
 # Comment Toxicity Detection using DistilBERT
 
-A multi-label Natural Language Processing (NLP) project for detecting toxic content in online comments using machine learning, deep learning, and transformer-based models.
+A production-ready, multi-label Natural Language Processing (NLP) system for detecting toxic content in online comments using machine learning, deep learning, and transformer-based models.
 
-The final application uses a fine-tuned **DistilBERT** model and provides real-time comment analysis and bulk CSV prediction through a **Streamlit web application**.
+The application features a fine-tuned **DistilBERT** model hosted on Hugging Face Hub, an interactive **Streamlit web application** with native explainable AI (XAI), and a high-performance **FastAPI microservice**.
 
 ---
 
 ## Project Overview
 
-Online platforms receive large volumes of user-generated comments, some of which may contain abusive, insulting, threatening, obscene, or hateful content.
+Online platforms receive large volumes of user-generated comments, some of which contain abusive, insulting, threatening, obscene, or hateful content.
 
 This project develops a multi-label toxicity classification system capable of identifying six toxicity categories:
 
@@ -31,236 +30,159 @@ The project uses the **Jigsaw Toxic Comment Classification** dataset.
 ### Training Dataset
 
 - Total comments: 159,571
-- Toxic comments: 16,225
-- Non-toxic comments: 143,346
+- Toxic comments: 16,225 (10.2%)
+- Non-toxic comments: 143,346 (89.8%)
 - Number of target labels: 6
 
 ### Label Distribution
 
-| Category | Count |
-|---|---:|
-| Toxic | 15,294 |
-| Severe Toxic | 1,595 |
-| Obscene | 8,449 |
-| Threat | 478 |
-| Insult | 7,877 |
-| Identity Hate | 1,405 |
+| Category | Count | Frequency |
+|---|---:|---:|
+| Toxic | 15,294 | 9.58% |
+| Severe Toxic | 1,595 | 1.00% |
+| Obscene | 8,449 | 5.29% |
+| Threat | 478 | 0.30% |
+| Insult | 7,877 | 4.94% |
+| Identity Hate | 1,405 | 0.88% |
 
-The dataset is highly imbalanced, with approximately 90% of comments containing no toxicity label.
-
----
-
-## Text Preprocessing
-
-The text preprocessing pipeline includes:
-
-1. Converting text to lowercase
-2. Removing URLs
-3. Removing email addresses
-4. Removing HTML tags
-5. Removing emojis
-6. Expanding contractions
-7. Removing unnecessary characters
-8. Normalizing repeated punctuation
-9. Removing extra whitespace
-10. Tokenization
-11. Lemmatization
-
-The same preprocessing pipeline is used during model inference to maintain consistency with model training.
+The dataset is highly imbalanced, with approximately 90% of comments containing no toxicity label, and minority categories like Threat representing as little as 0.30% of the corpus.
 
 ---
 
-## Models
+## Models & Evaluation
 
-Multiple approaches were explored before selecting the final model.
+Multiple approaches were explored before selecting the final model:
 
-- Logistic Regression
-- BiLSTM
-- GloVe + BiLSTM
-- DistilBERT
+- Logistic Regression (TF-IDF baseline)
+- BiLSTM (Keras baseline)
+- GloVe + BiLSTM (Pre-trained embeddings)
+- DistilBERT (Fine-tuned transformer)
 
-### Model Comparison
+### Benchmark Comparison
 
 | Model | Hamming Loss | Micro Precision | Micro Recall | Micro F1 | Macro F1 | ROC-AUC |
 |---|---:|---:|---:|---:|---:|---:|
 | Logistic Regression | 0.028481 | 0.570028 | 0.864674 | 0.687095 | 0.562904 | 0.980627 |
 | BiLSTM | 0.017262 | 0.822722 | 0.666233 | 0.736254 | 0.443658 | 0.975242 |
 | GloVe + BiLSTM | 0.016860 | 0.794361 | 0.720248 | 0.755492 | 0.587926 | 0.983861 |
-| DistilBERT | **0.015032** | **0.837504** | 0.725014 | **0.777210** | **0.588496** | **0.988290** |
+| **DistilBERT** | **0.015032** | **0.837504** | **0.725014** | **0.777210** | **0.588496** | **0.988290** |
 
-DistilBERT was selected as the final model because it achieved the strongest overall performance, including the highest ROC-AUC and Micro F1 and the lowest Hamming Loss.
+DistilBERT was selected as the primary deployment model because it achieved the highest ROC-AUC (0.9883), highest Micro F1 (0.7772), and lowest Hamming Loss (0.0150).
 
 ---
 
-## Final Model Performance
+## Moderation Policy & Calibrated Thresholds
 
-The final DistilBERT model achieved:
+In severe class imbalance, a rigid flat threshold of `0.5` causes high false negative rates on minority classes like **Threat** and **Severe Toxic**. 
 
-| Metric | Score |
-|---|---:|
-| ROC-AUC | 0.9883 |
-| Micro F1 | 0.7772 |
-| Micro Precision | 0.8375 |
-| Micro Recall | 0.7250 |
-| Macro F1 | 0.5885 |
-| Hamming Loss | 0.0150 |
+This system implements dynamic, calibrated decision thresholds:
+
+| Category | Standard Baseline | Balanced (F1-Optimized) | Strict Moderation | Relaxed Policy |
+|---|---:|---:|---:|---:|
+| Toxic | 0.50 | 0.45 | 0.30 | 0.60 |
+| Severe Toxic | 0.50 | 0.25 | 0.15 | 0.40 |
+| Obscene | 0.50 | 0.45 | 0.30 | 0.60 |
+| Threat | 0.50 | 0.20 | 0.10 | 0.35 |
+| Insult | 0.50 | 0.40 | 0.25 | 0.55 |
+| Identity Hate | 0.50 | 0.25 | 0.15 | 0.40 |
 
 ---
 
 ## Streamlit Application
 
-An interactive Streamlit application was developed for model inference and visualization.
+An interactive Streamlit application built **strictly using native Streamlit components and documentation** (no raw HTML or custom CSS).
 
 ### Features
 
-The application provides:
-
-- Real-time single-comment toxicity detection
-- Probability score for each toxicity category
-- Sample test comments
-- CSV batch prediction
-- Maximum 1,000 comments per Streamlit batch
-- Binary `0/1` output for bulk classification
-- Downloadable prediction results
-- Model performance metrics
-- Model comparison
-- Dataset insights
-- Toxicity label distribution
+- **Real-Time Comment Analysis:** Instant toxicity detection across all 6 categories.
+- **Toxicity Severity Index:** Composite 0–100 risk scoring with hazard weighting.
+- **Explainable AI (XAI):** Gradient-based word attribution natively highlighting contributing words (`:red[...]` / `:orange[...]`).
+- **Policy Sensitivity Controls:** Sidebar selector for presets (Balanced, Strict, Relaxed, Custom Sliders).
+- **Batch CSV Moderation:** Vectorized chunked CSV processing with category filters and instant download.
+- **Interactive Visualizations:** Native Streamlit bar charts and metric gauges.
+- **Performance & Benchmark Tables:** Side-by-side model and label comparison.
 
 ---
 
-## Prediction Modes
+## FastAPI Production Microservice
 
-### Single Comment Prediction
+A production-grade REST API is provided in `app/api.py`:
 
-For individual comments, the application displays the probability associated with each toxicity category.
+- `GET /`: Health and service information.
+- `GET /policies`: Retrieve available moderation presets and active thresholds.
+- `POST /predict`: Single comment inference with probability breakdown and severity score.
+- `POST /predict/batch`: High-throughput batch inference returning detailed and binary prediction matrices.
 
-Example:
+Run the API locally:
 
-```text
-Toxic          99.56%
-Severe Toxic    5.60%
-Obscene        51.66%
-Threat          1.73%
-Insult         94.33%
-Identity Hate   2.37%
-````
-
-### Bulk CSV Prediction
-
-CSV files containing a `comment_text` column can be uploaded for batch analysis.
-
-The bulk output uses binary classification:
-
-```text
-toxic,severe_toxic,obscene,threat,insult,identity_hate
-1,0,1,0,1,0
-0,0,0,0,0,0
+```bash
+python -m uvicorn app.api:app --reload --port 8000
 ```
 
-A classification threshold of `0.5` is used to convert probabilities into binary predictions.
-
----
-
-## Full Test Dataset Prediction
-
-The complete preprocessed test dataset contains **153,164 comments**.
-
-Because transformer inference over the complete dataset is computationally intensive, full test-set prediction is performed separately using a GPU-enabled Google Colab notebook rather than through Streamlit.
-
-The inference pipeline is:
-
-```text
-Preprocessed Test Data
-        |
-        v
-DistilBERT Tokenizer
-        |
-        v
-Fine-tuned DistilBERT
-        |
-        v
-Sigmoid Probabilities
-        |
-        v
-Threshold = 0.5
-        |
-        v
-Binary 0/1 Predictions
-```
-
-The final output contains:
-
-```text
-id
-comment_text
-toxic
-severe_toxic
-obscene
-threat
-insult
-identity_hate
-```
+Interactive Swagger documentation is available at `http://localhost:8000/docs`.
 
 ---
 
 ## Project Structure
 
 ```text
-Comment Toxicity/
+comment-toxicity-detection/
+|
+|-- .github/
+|   |-- workflows/
+|       |-- ci.yml
 |
 |-- app/
 |   |-- streamlit_app.py
+|   |-- api.py
 |
 |-- src/
 |   |-- __init__.py
 |   |-- load_model.py
 |   |-- prediction.py
 |   |-- preprocessing.py
+|   |-- utils.py
 |
 |-- notebooks/
 |   |-- 01_EDA.ipynb
-|   |-- 02_Preprocessing.ipynb
-|   |-- 03_Logistic_Regression.ipynb
+|   |-- 02_preprocessing.ipynb
+|   |-- 03_TFIDF_LogisticRegression.ipynb
 |   |-- 04_BiLSTM.ipynb
 |   |-- 05_GloVe_BiLSTM.ipynb
-|   |-- 06_DistilBERT.ipynb
+|   |-- 06_DistilBERT_.ipynb
 |   |-- 07_Model_Comparison.ipynb
 |   |-- 08_Test_Data_Prediction.ipynb
 |
-|-- data/
-|-- models/
-|-- outputs/
-|
 |-- requirements.txt
+|-- test_model.py
 |-- .gitignore
 |-- README.md
-|-- test_model.py
 ```
-
-
 
 ---
 
-## Installation
+## Installation & Setup
 
-Clone the repository and move into the project directory.
-
-Create a virtual environment:
+Clone the repository:
 
 ```bash
+git clone https://github.com/gopinath-sara1n/comment-toxicity-detection.git
+cd comment-toxicity-detection
+```
+
+Create and activate a virtual environment:
+
+```bash
+# Windows
 python -m venv ctm
-```
-
-### Windows
-
-Activate the environment:
-
-```bash
 ctm\Scripts\activate
+
+# Linux / macOS
+python -m venv ctm
+source ctm/bin/activate
 ```
 
-Install the required dependencies:
+Install dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -268,80 +190,47 @@ python -m pip install -r requirements.txt
 
 ---
 
-## Run the Streamlit Application
+## Running the Applications
 
-From the project root:
+### 1. Launch Streamlit Web UI
 
 ```bash
 python -m streamlit run app/streamlit_app.py
 ```
 
-The application will start locally in the browser.
+### 2. Launch FastAPI Microservice
+
+```bash
+python -m uvicorn app.api:app --host 0.0.0.0 --port 8000
+```
+
+### 3. Run Automated Tests
+
+```bash
+python test_model.py
+```
+
 ---
-## Live Application
 
-Try the deployed Streamlit application:
+## Trained Model Artifact
 
-[Live Demo](https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/)
----
-## Trained Model
+The fine-tuned DistilBERT weights are published on the Hugging Face Hub:
 
-The fine-tuned DistilBERT model is available on Hugging Face:
+- [gopinath-sara1n/comment-toxicity-distilbert](https://huggingface.co/gopinath-sara1n/comment-toxicity-distilbert)
 
-[DistilBERT Toxicity Model](https://huggingface.co/gopinath-sara1n/comment-toxicity-distilbert)
 ---
 
 ## Technologies Used
 
-* Python
-* Pandas
-* NumPy
-* NLTK
-* PyTorch
-* Hugging Face Transformers
-* DistilBERT
-* TensorFlow / Keras
-* GloVe Embeddings
-* Scikit-learn
-* Streamlit
-* Google Colab
-* Jupyter Notebook
-* VS Code
-
----
-
-## Key Learnings
-
-This project demonstrates:
-
-* NLP text preprocessing
-* Multi-label classification
-* Handling highly imbalanced text data
-* Traditional machine-learning classification
-* Bidirectional LSTM networks
-* Pre-trained word embeddings
-* Transformer fine-tuning
-* Multi-label model evaluation
-* GPU-based model training and inference
-* Batch inference
-* Model deployment using Streamlit
-* Modular ML project development
-
----
-
-## Future Improvements
-
-Possible improvements include:
-
-* Per-label threshold optimization
-* Improved handling of minority toxicity classes
-* Model monitoring and feedback collection
+* **Language:** Python
+* **NLP & Modeling:** PyTorch, Hugging Face Transformers, DistilBERT, NLTK, Scikit-learn
+* **Serving & Web:** Streamlit (100% Native API), FastAPI, Uvicorn, Pydantic
+* **Testing & CI:** Pytest, GitHub Actions CI
+* **Deep Learning Baselines:** TensorFlow, Keras, GloVe Embeddings
 
 ---
 
 ## Author
 
-**Gopinath S**
-
+**Gopinath S**  
 Data Science & Machine Learning
-
