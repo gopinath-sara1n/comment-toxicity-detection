@@ -1,8 +1,19 @@
 # Comment Toxicity Detection using DistilBERT
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/)
+[![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-DistilBERT%20Model-yellow)](https://huggingface.co/gopinath-sara1n/comment-toxicity-distilbert)
+
 A production-ready, multi-label Natural Language Processing (NLP) system for detecting toxic content in online comments using machine learning, deep learning, and transformer-based models.
 
 The application features a fine-tuned **DistilBERT** model hosted on Hugging Face Hub, an interactive **Streamlit web application** with native explainable AI (XAI), and a high-performance **FastAPI microservice**.
+
+---
+
+## Live Demo
+
+Try the deployed Streamlit web application:
+
+👉 **[Launch Live Toxicity Detector](https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/)**
 
 ---
 
@@ -92,14 +103,16 @@ This system implements dynamic, calibrated decision thresholds:
 
 An interactive Streamlit application built **strictly using native Streamlit components and documentation** (no raw HTML or custom CSS).
 
+Try the live version: [**comment-toxicity-detection.streamlit.app**](https://comment-toxicity-detection-ktp7dqnn9m9ab3rkczjpgz.streamlit.app/)
+
 ### Features
 
 - **Real-Time Comment Analysis:** Instant toxicity detection across all 6 categories.
 - **Toxicity Severity Index:** Composite 0–100 risk scoring with hazard weighting.
-- **Explainable AI (XAI):** Gradient-based word attribution natively highlighting contributing words (`:red[...]` / `:orange[...]`).
+- **Explainable AI (XAI):** Gradient-based word attribution automatically highlighting contributing words (`:red[...]` / `:orange[...]`).
 - **Policy Sensitivity Controls:** Sidebar selector for presets (Balanced, Strict, Relaxed, Custom Sliders).
 - **Batch CSV Moderation:** Vectorized chunked CSV processing with category filters and instant download.
-- **Interactive Visualizations:** Native Streamlit bar charts and metric gauges.
+- **Interactive Visualizations:** Native Streamlit bar charts and progress dataframes.
 - **Performance & Benchmark Tables:** Side-by-side model and label comparison.
 
 ---
